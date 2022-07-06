@@ -3,27 +3,28 @@ import { Text, StyleSheet, View } from "react-native";
 import { fontSizes, spacing } from "./utils/sizes";
 import { colors } from "./utils/colors";
 
-const minsToMilliSeconds = (min) => min * 1000 * 60;
+const minutesToMillis = (min) => min * 1000 * 60;
 const formatTime = (time) => (time < 10 ? `0${time}` : time);
 
-const Countdown = ({ minutes = 20, isPaused, onProgress }) => {
-  const [millis, setMillis] = useState(minsToMilliSeconds(minutes));
-
+const Countdown = ({ minutes = 0.1, isPaused, onProgress, onEnd }) => {
   const interval = React.useRef(null);
 
-  const countDown = () => {
+  const [millis, setMillis] = useState(minutesToMillis(minutes));
+
+  const countDown = () =>
     setMillis((time) => {
       if (time === 0) {
+        clearInterval(interval.current);
+        onEnd();
         return time;
       }
       const timeLeft = time - 1000;
-      onProgress(timeLeft / minsToMilliSeconds(minutes));
+      onProgress((timeLeft / minutesToMillis(minutes)) * 100);
       return timeLeft;
     });
-  };
 
   useEffect(() => {
-    setMillis();
+    setMillis(minutesToMillis(minutes));
   }, [minutes]);
 
   useEffect(() => {
