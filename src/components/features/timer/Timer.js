@@ -8,16 +8,16 @@ import { ProgressBar } from "react-native-paper";
 import Timing from "./Timing";
 import { useKeepAwake } from "expo-keep-awake";
 
-const Timer = ({ focusSubject, onTimerEnd }) => {
-  const [minutes, setIsMinutes] = useState(DEFAULT_TIME);
-  const [isStarted, setIsStarted] = useState(false);
-  const [progress, setIsProgress] = useState(1);
+const Timer = ({ focusSubject, onTimerEnd, clearSubject }) => {
+  const [minutes, setMinutes] = useState(DEFAULT_TIME);
+  const [isStarted, setStarted] = useState(false);
+  const [progress, setProgress] = useState(1);
 
   useKeepAwake();
   const DEFAULT_TIME = 0.1;
 
   const progressHandler = (progress) => {
-    setIsProgress(progress);
+    setProgress(progress);
   };
 
   const vibrate = () => {
@@ -31,16 +31,16 @@ const Timer = ({ focusSubject, onTimerEnd }) => {
 
   const onEnd = () => {
     vibrate();
-    setIsMinutes(DEFAULT_TIME);
-    setIsProgress(1);
-    setIsStarted(false);
+    setMinutes(DEFAULT_TIME);
+    setProgress(1);
+    setStarted(false);
     onTimerEnd();
   };
 
   const changeTimeHandler = (min) => {
-    setIsStarted(false);
-    setIsProgress(1);
-    setIsMinutes(min);
+    setStarted(false);
+    setProgress(1);
+    setMinutes(min);
   };
 
   return (
@@ -70,10 +70,13 @@ const Timer = ({ focusSubject, onTimerEnd }) => {
 
       <View style={styles.buttonWrapper}>
         {!isStarted ? (
-          <RoundedButton title="start" onPress={() => setIsStarted(true)} />
+          <RoundedButton title="start" onPress={() => setStarted(true)} />
         ) : (
-          <RoundedButton title="pause" onPress={() => setIsStarted(false)} />
+          <RoundedButton title="pause" onPress={() => setStarted(false)} />
         )}
+      </View>
+      <View style={styles.clearSubject}>
+        <RoundedButton size={50} title="-" onPress={() => clearSubject()} />
       </View>
     </View>
   );
@@ -103,6 +106,10 @@ const styles = StyleSheet.create({
     padding: 15,
     justifyContent: "center",
     alignItems: "center",
+  },
+  clearSubject: {
+    paddingBottom: 25,
+    paddingLeft: 25,
   },
 });
 
