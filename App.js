@@ -4,9 +4,18 @@ import Focus from "./src/components/features/focus/focus";
 import { colors } from "./src/components/utils/colors";
 import Timer from "./src/components/features/timer/Timer";
 
+statuses = {
+  complete: 1,
+  failed: 2,
+};
+
 function App() {
   const [focusSubject, setFocusSubject] = useState(null);
   const [focusHistory, setFocusHistory] = useState([]);
+
+  addFocusHistorySubjectWithState = (focusSubject, status) => {
+    setFocusHistory([...focusHistory, { subject, status }]);
+  };
 
   useEffect(() => {
     if (focusSubject) {
@@ -20,9 +29,12 @@ function App() {
         <Timer
           focusSubject={focusSubject}
           onTimerEnd={() => {
+            addFocusHistorySubjectWithState(focusSubject, statuses.complete);
             setFocusSubject(null);
           }}
           clearSubject={() => {
+            addFocusHistorySubjectWithState(focusSubject, statuses.failed);
+
             setFocusSubject(null);
           }}
         />
