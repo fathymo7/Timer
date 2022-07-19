@@ -1,55 +1,47 @@
-import React, { useEffect, useState } from "react";
-import { Text, View, StyleSheet } from "react-native";
-import Focus from "./src/components/features/focus/focus";
-import { colors } from "./src/components/utils/colors";
-import Timer from "./src/components/features/timer/Timer";
+import React, { useState } from "react";
+import {
+  Text,
+  View,
+  StyleSheet,
+  SafeAreaView,
+  Platform,
+  StatusBar,
+} from "react-native";
+import Constants from "expo-constants";
 
-statuses = {
-  complete: 1,
-  failed: 2,
-};
+import { Focus } from "./src/features/Focus";
+import { TaskHistory } from "./src/components/TaskHistory";
+import { Timer } from "./src/features/Timer";
+import { colors } from "./src/utils/colors";
 
-function App() {
-  const [focusSubject, setFocusSubject] = useState(null);
-  const [focusHistory, setFocusHistory] = useState([]);
-
-  addFocusHistorySubjectWithState = (focusSubject, status) => {
-    setFocusHistory([...focusHistory, { subject, status }]);
-  };
-
-  useEffect(() => {
-    if (focusSubject) {
-      setFocusHistory([...focusHistory, focusSubject]);
-    }
-  }, [focusSubject]);
+export default function App() {
+  const [currentTask, setCurrentTask] = useState(null);
+  const [history, setHistory] = useState(["test item"]);
 
   return (
-    <View style={styles.container}>
-      {focusSubject ? (
+    <SafeAreaView style={styles.container}>
+      {currentTask ? (
         <Timer
-          focusSubject={focusSubject}
-          onTimerEnd={() => {
-            addFocusHistorySubjectWithState(focusSubject, statuses.complete);
-            setFocusSubject(null);
-          }}
-          clearSubject={() => {
-            addFocusHistorySubjectWithState(focusSubject, statuses.failed);
-
-            setFocusSubject(null);
+          task={currentTask}
+          resetTask={() => setCurrentTask(null)}
+          onTimerEnd={(task) => {
+            setHistory([...history, task]);
           }}
         />
       ) : (
-        <Focus addSubject={setFocusSubject} />
+        <>
+          <Focus updateTask={setCurrentTask} />
+          <TaskHistory history={history} />
+        </>
       )}
-      <Text>{focusSubject}</Text>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.darkBlue,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    backgroundColor: colors.green,
   },
 });
-export default App;
